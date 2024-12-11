@@ -15,6 +15,8 @@ services:
   onvif-ptz:
     build: ./onvif-ptz
     command: "./camera.py -m mqtt -t skyscan/flight/json -u ${AXIS_USERNAME} -p ${AXIS_PASSWORD} -a ${AXIS_IP} -z ${CAMERA_ZOOM} -s ${CAMERA_MOVE_SPEED} -d ${CAMERA_DELAY} --lat ${LAT} --lon ${LONG} --alt ${ALT} -e ${CAMERA_ELEVATION_CORRECTION} -b ${CAMERA_BEARING_CORRECTION}"
+    volumes:
+      - ./capture:/app/capture
   #axis-ptz:
   #  image: ./axiz-ptz  #iqtlabs/skyscan-axis-ptz
   #  command: "./camera.py -m mqtt -t skyscan/flight/json -u ${AXIS_USERNAME} -p ${AXIS_PASSWORD} -a ${AXIS_IP} -z ${CAMERA_ZOOM} -s ${CAMERA_MOVE_SPEED} -d ${CAMERA_DELAY} --lat ${LAT} --lon ${LONG} --alt ${ALT} --roll ${ROLL} --pitch ${PITCH} --yaw ${YAW}"
