@@ -232,7 +232,7 @@ The Aircraft Database includes a mapping of the ADS-B ID to the make, model, ope
 
 ```bash
 mkdir ~/Projects/SkyScan/data
-wget https://opensky-network.org/datasets/metadata/aircraftDatabase.csv -P ~/Projects/SkyScan/data
+wget https://s3.opensky-network.org/data-samples/metadata/aircraftDatabase.csv -P ~/Projects/SkyScan/data
 ```
 
 ## Wrap it up...
