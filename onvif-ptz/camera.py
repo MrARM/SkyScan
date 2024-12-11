@@ -24,10 +24,9 @@ import utils
 import logging
 import coloredlogs
 
-logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(logging.WARNING)
-logging.getLogger("azure.storage.common.storageclient").setLevel(logging.WARNING)
+#logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(logging.WARNING)
+#logging.getLogger("azure.storage.common.storageclient").setLevel(logging.WARNING)
 
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, __version__
 
 ID = str(random.randint(1,100001))
 args = None
@@ -39,7 +38,6 @@ cameraMoveSpeed = None
 cameraDelay = None
 cameraLead = 0 
 active = False
-blob_service_client = None 
 
 
 object_topic = None
@@ -126,23 +124,10 @@ def get_jpeg_request():  # 5.2.4.1
         with open(filepath, 'wb') as var:
             var.write(resp.content)
 
-
-        # Create a blob client using the local file name as the name for the blob
-        blob_client = blob_service_client.get_blob_client(container="inbox", blob=filename)
-
-        # Upload the created file
-        try:
-            with open(filepath, "rb") as data:
-                blob_client.upload_blob(data,overwrite=True)
-        except Exception as e: 
-            logging.error(e)
-            logging.error(" 🚨 Exception while Uploading")
-
-
         #Non-Blocking
-        #fd = os.open(filename, os.O_CREAT | os.O_WRONLY | os.O_NONBLOCK)
-        #os.write(fd, resp.content)
-        #os.close(fd)
+        fd = os.open(filename, os.O_CREAT | os.O_WRONLY | os.O_NONBLOCK)
+        os.write(fd, resp.content)
+        os.close(fd)
 
         # Blocking
 
@@ -364,7 +349,6 @@ def main():
     global cameraConfig
     global flight_topic
     global object_topic
-    global blob_service_client
 
     parser = argparse.ArgumentParser(description='An MQTT based camera controller')
     parser.add_argument('--lat', type=float, help="Latitude of camera")
@@ -384,7 +368,6 @@ def main():
     parser.add_argument('-v', '--verbose',  action="store_true", help="Verbose output")
     parser.add_argument('-b', '--camera-bearing-correction', type=float, help="The amount to correct the bearing by", default=0)
     parser.add_argument('-e', '--camera-elevation-correction', type=float, help="The amount to correct camera elevation by", default=0)
-    parser.add_argument("--conn", help="Azure Blob Storage connection string")
     args = parser.parse_args()
 
     level = logging.DEBUG if args.verbose else logging.INFO
@@ -418,7 +401,6 @@ def main():
     camera_lead = args.camera_lead
     
     # Create the BlobServiceClient object which will be used to create a container client
-    blob_service_client = BlobServiceClient.from_connection_string(args.conn)
 
     threading.Thread(target=moveCamera, args=[args.axis_ip, args.axis_username, args.axis_password],daemon=True).start()
         # Sleep for a bit so we're not hammering the HAT with updates
