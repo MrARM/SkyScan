@@ -167,6 +167,10 @@ def calculateCameraPosition():
     cameraPan = utils.cameraPanFromCoordinate(cameraPosition=[camera_latitude, camera_longitude], airplanePosition=[lat, lon])
     cameraPan = calculate_bearing_correction(cameraPan)
 
+    # Trick the script for non-inverted camera (tacodestroyer)
+    cameraPan = -cameraPan  # Negate pan
+    cameraTilt = -cameraTilt  # Negate tilt
+
 
 
 def moveCamera(ip, username, password):
